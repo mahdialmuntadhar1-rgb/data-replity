@@ -288,3 +288,63 @@ export function cleanBusinessData(b: any): any {
 
   return result;
 }
+
+/**
+ * Calculates a confidence score (0-100) and returns classification based on user requirements.
+ */
+export function calculateConfidenceScore(b: any): { score: number; status: 'verified' | 'likely' | 'unverified' } {
+  let score = 0;
+
+  // 1. Google verified/source -> +40
+  if (b.scrape_source === 'google_maps' || b.google_data || b.gplaces_id || b.verification_status === 'verified') {
+    score += 40;
+  }
+
+  // 2. Facebook match/source -> +20
+  if (b.facebook_url && b.facebook_url.trim().length > 0) {
+    score += 20;
+  }
+
+  // 3. Instagram match/source -> +15
+  if (b.instagram_url && b.instagram_url.trim().length > 0) {
+    score += 15;
+  }
+
+  // 4. Phone verified -> +25
+  if (b.normalized_phone && b.normalized_phone.trim().length > 0) {
+    score += 25;
+  }
+
+  // 5. Multiple sources agree -> +20
+  let sourcesCount = 0;
+  if (b.scrape_source === 'google_maps' || b.gplaces_id) sourcesCount++;
+  if (b.facebook_url && b.facebook_url.trim().length > 0) sourcesCount++;
+  if (b.instagram_url && b.instagram_url.trim().length > 0) sourcesCount++;
+  if (b.website && b.website.trim().length > 0) sourcesCount++;
+  
+  if (sourcesCount >= 3 || (b.scrape_source && sourcesCount >= 2)) {
+    score += 20;
+  }
+
+  // 6. Conflicting data -> -30
+  if (!b.normalized_phone || b.normalized_phone.trim().length === 0 || !b.business_name || b.business_name.trim().length <= 2) {
+    score -= 30;
+  }
+
+  // Cap score between 0 and 100
+  const finalScore = Math.max(0, Math.min(100, score));
+
+  // Output Classification
+  // 80–100 -> VERIFIED BUSINESS (translated to "verified")
+  // 50–79 -> LIKELY CORRECT (translated to "likely" or handled in display)
+  // <50 -> UNVERIFIED
+  let status: 'verified' | 'likely' | 'unverified' = 'unverified';
+  if (finalScore >= 80) {
+    status = 'verified';
+  } else if (finalScore >= 50) {
+    status = 'likely';
+  }
+
+  return { score: finalScore, status };
+}
+

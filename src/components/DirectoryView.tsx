@@ -334,17 +334,32 @@ export default function DirectoryView({
                             {getCategoryName(bus.category_id, language)} {bus.subcategory_id ? `• ${getSubcategoryName(bus.category_id, bus.subcategory_id, language)}` : ''}
                           </span>
                           
-                          {bus.verification_status === 'verified' ? (
-                            <span className="flex items-center gap-1 bg-teal-50 text-teal-700 text-[10px] font-bold px-2 py-0.5 rounded-md border border-teal-100">
-                              <CheckCircle2 className="h-3 w-3" />
-                              {language === 'ar' ? 'موثق' : 'Verified'}
-                            </span>
-                          ) : (
-                            <span className="flex items-center gap-1 bg-amber-50 text-amber-700 text-[10px] font-bold px-2 py-0.5 rounded-md border border-amber-100">
-                              <AlertTriangle className="h-3 w-3" />
-                              {language === 'ar' ? 'طلب مراجعة' : 'Pending'}
-                            </span>
-                          )}
+                          {/* Confidence Score and Classification Output */}
+                          {(() => {
+                            const score = bus.confidence_score !== undefined ? bus.confidence_score : (bus.verification_status === 'verified' ? 90 : 45);
+                            if (score >= 80) {
+                              return (
+                                <span className="flex items-center gap-1 bg-emerald-50 text-emerald-700 text-[10px] font-extrabold px-2.5 py-1 rounded-md border border-emerald-100 shadow-sm font-sans uppercase">
+                                  <CheckCircle2 className="h-3.5 w-3.5" />
+                                  {language === 'ar' ? `موثق: ${score}%` : `VERIFIED: ${score}%`}
+                                </span>
+                              );
+                            } else if (score >= 50) {
+                              return (
+                                <span className="flex items-center gap-1 bg-amber-50 text-amber-700 text-[10px] font-extrabold px-2.5 py-1 rounded-md border border-amber-100 shadow-sm font-sans uppercase">
+                                  <AlertTriangle className="h-3.5 w-3.5 animate-pulse" />
+                                  {language === 'ar' ? `محتمل: ${score}%` : `LIKELY CORRECT: ${score}%`}
+                                </span>
+                              );
+                            } else {
+                              return (
+                                <span className="flex items-center gap-1 bg-rose-50 text-rose-700 text-[10px] font-extrabold px-2.5 py-1 rounded-md border border-rose-100 shadow-sm font-sans uppercase">
+                                  <AlertTriangle className="h-3.5 w-3.5" />
+                                  {language === 'ar' ? `غير مؤكد: ${score}%` : `UNVERIFIED: ${score}%`}
+                                </span>
+                              );
+                            }
+                          })()}
                         </div>
 
                         {/* Title and description */}

@@ -10,7 +10,8 @@ import {
   detectWhatsApp, 
   normalizeArabic, 
   cleanBusinessData, 
-  evaluateDuplicateConfidence 
+  evaluateDuplicateConfidence,
+  calculateConfidenceScore
 } from "./src/utils_normalization";
 
 // Global In-Memory Database backed by optional persistence
@@ -33,7 +34,15 @@ function seedDatabase() {
       const data = fs.readFileSync(dbFilePath, "utf8");
       businesses = JSON.parse(data);
       if (businesses.length > 0) {
-        console.log(`Database loaded with ${businesses.length} items.`);
+        businesses = businesses.map(b => {
+          const { score, status } = calculateConfidenceScore(b);
+          return {
+            ...b,
+            confidence_score: score,
+            verification_status: status as any
+          };
+        });
+        console.log(`Database loaded and normalized with ${businesses.length} items.`);
         return;
       }
     } catch (e) {
@@ -263,6 +272,16 @@ function seedDatabase() {
       scrape_source: "google_maps"
     }
   ];
+
+  // Map and calculate confidence score + update status
+  businesses = businesses.map(b => {
+    const { score, status } = calculateConfidenceScore(b);
+    return {
+      ...b,
+      confidence_score: score,
+      verification_status: status as any
+    };
+  });
 
   saveDatabase();
 }
@@ -554,6 +573,11 @@ async function startServer() {
       scrape_source: cleaned.scrape_source || 'custom_upload'
     };
 
+    // Auto calculate actual confidence score & update verification status according to model rules
+    const scoreObj = calculateConfidenceScore(newBusiness);
+    newBusiness.confidence_score = scoreObj.score;
+    newBusiness.verification_status = scoreObj.status as any;
+
     // Before saving, evaluate instant duplicates
     let autoMerged = false;
     let mergeTargetId = "";
@@ -592,11 +616,18 @@ async function startServer() {
     }
 
     const cleaned = cleanBusinessData(req.body);
-    businesses[index] = {
+    const updatedRecord = {
       ...businesses[index],
       ...cleaned,
       updated_at: new Date().toISOString()
     };
+    
+    // Auto calculate actual confidence score & update verification status according to model rules
+    const scoreObj = calculateConfidenceScore(updatedRecord);
+    updatedRecord.confidence_score = scoreObj.score;
+    updatedRecord.verification_status = scoreObj.status as any;
+    
+    businesses[index] = updatedRecord;
 
     saveDatabase();
     res.json({ success: true, business: businesses[index] });
@@ -731,12 +762,16 @@ ${textPayload}
     logs.push("Validation Pipeline passed. Removing emojis, trailing noise, normalizing phones...");
     logs.push(`Normalized Phone Result: ${finalized.normalized_phone || 'None'}`);
 
-    // Create unique ID & slug
+    // Create unique ID & slug and calculate scores
     finalized.id = `scraped-${Date.now()}`;
     finalized.created_at = new Date().toISOString();
     finalized.updated_at = new Date().toISOString();
-    finalized.verification_status = "pending";
     finalized.scrape_source = platform || "google_maps";
+
+    // Auto calculate actual confidence score & update verification status according to model rules
+    const scoreObj = calculateConfidenceScore(finalized);
+    finalized.confidence_score = scoreObj.score;
+    finalized.verification_status = scoreObj.status as any;
 
     // Evaluate Duplicates live
     logs.push("Scanning overall directory index for possible exact or fuzzy duplicates...");

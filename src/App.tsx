@@ -12,13 +12,15 @@ import {
   PlusCircle,
   X,
   Plus,
-  Compass
+  Compass,
+  FileSpreadsheet
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Governorate, Category, Business } from './types';
 import DirectoryView from './components/DirectoryView';
 import AdminDashboard from './components/AdminDashboard';
 import ScraperView from './components/ScraperView';
+import ExportPipeline from './components/ExportPipeline';
 
 // Dictionary of multi-lingual translations (EN, AR, KU)
 const TRANSLATIONS = {
@@ -54,7 +56,8 @@ const TRANSLATIONS = {
     confidenceScore: "Probability Score",
     editListingTitle: "Revise Corporate Record",
     saveChanges: "Save Cleaned Data",
-    close: "Close"
+    close: "Close",
+    exportTab: "Export & Pipeline"
   },
   ar: {
     title: "منصة دليل وأعمال العراق",
@@ -88,7 +91,8 @@ const TRANSLATIONS = {
     confidenceScore: "درجة مطابقة الثقة",
     editListingTitle: "مراجعة وتصحيح تفاصيل المنشأة",
     saveChanges: "حفظ البيانات الطاهرة",
-    close: "إغلاق"
+    close: "إغلاق",
+    exportTab: "تصدير ومعالجة البيانات"
   },
   ku: {
     title: "سەکۆی کار و بزنسی عێراق",
@@ -122,12 +126,13 @@ const TRANSLATIONS = {
     confidenceScore: "نمرەی متمانەی هاوشێوەیی",
     editListingTitle: "دەستکاری زانیارییەکانی بزنس",
     saveChanges: "پاشەکەوتکردنی داتای نوێ",
-    close: "داخستن"
+    close: "داخستن",
+    exportTab: "تەنسیق و هەناردەکردن"
   }
 };
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState<'directory' | 'scrape' | 'admin'>('directory');
+  const [activeTab, setActiveTab] = useState<'directory' | 'scrape' | 'admin' | 'export'>('directory');
   const [language, setLanguage] = useState<'en' | 'ar' | 'ku'>('ar'); // Default to Arabic for localized experience
   
   const [categories, setCategories] = useState<Category[]>([]);
@@ -303,7 +308,8 @@ export default function App() {
                 {[
                   { id: 'directory', label: activeTranslations.directoryTab, icon: Building2 },
                   { id: 'scrape', label: activeTranslations.scrapeTab, icon: Cpu },
-                  { id: 'admin', label: activeTranslations.adminTab, icon: Settings }
+                  { id: 'admin', label: activeTranslations.adminTab, icon: Settings },
+                  { id: 'export', label: activeTranslations.exportTab, icon: FileSpreadsheet }
                 ].map(tab => {
                   const IconComponent = tab.icon;
                   const isActive = activeTab === tab.id;
@@ -386,7 +392,8 @@ export default function App() {
             {[
               { id: 'directory', label: activeTranslations.directoryTab },
               { id: 'scrape', label: activeTranslations.scrapeTab },
-              { id: 'admin', label: activeTranslations.adminTab }
+              { id: 'admin', label: activeTranslations.adminTab },
+              { id: 'export', label: activeTranslations.exportTab }
             ].map(tab => (
               <button
                 key={tab.id}
@@ -433,6 +440,15 @@ export default function App() {
 
                 {activeTab === 'admin' && (
                   <AdminDashboard 
+                    categories={categories}
+                    locations={locations}
+                    language={language}
+                    translations={activeTranslations}
+                  />
+                )}
+
+                {activeTab === 'export' && (
+                  <ExportPipeline 
                     categories={categories}
                     locations={locations}
                     language={language}
