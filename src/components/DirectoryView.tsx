@@ -125,33 +125,33 @@ export default function DirectoryView({
   return (
     <div className="space-y-8" id="business-directory-view" dir={isRtl ? 'rtl' : 'ltr'}>
       {/* Search Header Banner */}
-      <div className="relative bg-gradient-to-r from-slate-900 to-slate-800 text-white rounded-3xl p-6 md:p-10 shadow-xl overflow-hidden border border-slate-700">
-        <div className="absolute top-0 right-0 h-40 w-40 bg-zinc-700/10 rounded-full blur-2xl transform translate-x-10 -translate-y-10"></div>
-        <div className="absolute bottom-0 left-0 h-56 w-56 bg-zinc-700/10 rounded-full blur-3xl transform -translate-x-10 translate-y-20"></div>
-
+      <div className="relative bg-gradient-to-r from-indigo-950 via-slate-950 to-indigo-950 text-white rounded-3xl p-6 md:p-10 shadow-xl overflow-hidden border border-indigo-900">
+        <div className="absolute top-0 right-0 h-40 w-40 bg-indigo-505/10 bg-indigo-500/10 rounded-full blur-2xl transform translate-x-10 -translate-y-10"></div>
+        <div className="absolute bottom-0 left-0 h-56 w-56 bg-indigo-505/10 bg-indigo-500/10 rounded-full blur-3xl transform -translate-x-10 translate-y-20"></div>
+ 
         <div className="relative z-10 max-w-3xl space-y-4">
-          <span className="inline-block bg-slate-800 text-slate-300 font-mono text-xs px-3.5 py-1.5 rounded-full border border-slate-700">
+          <span className="inline-block bg-indigo-850 bg-indigo-900 text-indigo-200 font-mono text-xs px-3.5 py-1.5 rounded-full border border-indigo-800">
             {translations.statsTotal}: {totalCount} {translations.businesses}
           </span>
-          <h2 className="text-3xl md:text-4xl font-sans font-bold tracking-tight">
+          <h2 className="text-3xl md:text-4xl font-sans font-extrabold tracking-tight">
             {language === 'ar' ? 'استكشف الشركات والخدمات في العراق' : 'Explore Iraqi Businesses & Services'}
           </h2>
-          <p className="text-slate-300 font-sans text-sm md:text-base leading-relaxed">
+          <p className="text-slate-350 text-slate-300 font-sans text-sm md:text-base leading-relaxed font-medium">
             {language === 'ar' 
               ? 'تصفح قاعدة بيانات موثقة ومطهرة وخالية من التكرار لمختلف الأقسام والمحافظات العراقية الـ 18.' 
               : 'Browse a synchronized, normalized, and duplicate-free registry covering all 18 Iraqi governorates.'}
           </p>
-
+ 
           {/* Search Inputs */}
           <div className="flex flex-col md:flex-row gap-3 pt-2">
             <div className="relative flex-1">
-              <Search className={`absolute top-3.5 ${isRtl ? 'right-4' : 'left-4'} h-5 w-5 text-slate-400`} />
+              <Search className={`absolute top-3.5 ${isRtl ? 'right-4' : 'left-4'} h-5 w-5 text-indigo-400`} />
               <input
                 type="text"
                 placeholder={translations.searchPlaceholder}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className={`w-full bg-slate-950/80 text-white placeholder-slate-400 font-sans rounded-2xl py-3 ${isRtl ? 'pr-11 pl-4' : 'pl-11 pr-4'} text-sm focus:ring-1 focus:ring-slate-500 border border-slate-700 focus:outline-none focus:border-slate-500`}
+                className={`w-full bg-slate-900/90 text-white placeholder-slate-400 font-sans rounded-2xl py-3 ${isRtl ? 'pr-11 pl-4' : 'pl-11 pr-4'} text-sm focus:ring-2 focus:ring-indigo-500 border border-indigo-800 focus:outline-none focus:border-indigo-500`}
               />
             </div>
             
@@ -164,7 +164,7 @@ export default function DirectoryView({
                 setSelectedSub('');
                 setVerificationFilter('');
               }}
-              className="px-5 py-3 bg-slate-800 hover:bg-slate-700/80 text-white font-sans text-sm rounded-2xl font-medium transition duration-200 border border-slate-700"
+              className="px-5 py-3 bg-indigo-650 hover:bg-indigo-700 bg-indigo-600 text-white font-sans text-sm rounded-2xl font-bold transition duration-200 border border-none shadow-sm"
             >
               {translations.clearFilters}
             </button>
@@ -277,7 +277,7 @@ export default function DirectoryView({
                 <button
                   key={opt.value}
                   onClick={() => setVerificationFilter(opt.value)}
-                  className={`text-left ${isRtl ? 'text-right' : 'text-left'} text-sm py-1.5 px-3 rounded-lg transition font-sans ${verificationFilter === opt.value ? 'bg-slate-900 text-white font-medium' : 'hover:bg-slate-50 text-slate-600'}`}
+                  className={`text-left ${isRtl ? 'text-right' : 'text-left'} text-sm py-1.5 px-3 rounded-lg transition font-sans ${verificationFilter === opt.value ? 'bg-indigo-600 text-white font-semibold shadow-sm' : 'hover:bg-slate-50 text-slate-600'}`}
                 >
                   {opt.label}
                 </button>

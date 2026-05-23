@@ -216,136 +216,254 @@ export default function App() {
   const isRtl = language === 'ar';
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-800" dir={isRtl ? 'rtl' : 'ltr'}>
+    <div className="flex flex-col h-screen w-full bg-slate-50 font-sans text-slate-900 overflow-hidden" dir={isRtl ? 'rtl' : 'ltr'}>
       
-      {/* Visual Navigation Header Banner */}
-      <header className="bg-white border-b border-slate-100 sticky top-0 z-40 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16 md:h-20">
+      {/* Visual Navigation Header Banner (Sleek Theme) */}
+      <nav className="flex items-center justify-between px-6 py-4 bg-white border-b border-slate-200 shadow-sm shrink-0 z-40">
+        
+        {/* Left Side: Logo Brand Title (Sleek styled IQ logo box with Indigo key accent) */}
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 bg-indigo-600 rounded-lg flex items-center justify-center text-white font-bold text-xl shadow-sm">
+            IQ
+          </div>
+          <div className="flex flex-col">
+            <h1 className="text-base md:text-lg font-bold leading-none tracking-tight text-slate-800 uppercase flex items-center gap-2">
+              <span>{activeTranslations.title}</span>
+            </h1>
+            <span className="text-[10px] md:text-xs text-slate-500 font-medium whitespace-nowrap">
+              {language === 'ar' ? 'البوابة الذكية لمحترفي جمع البيانات والمشترين' : 'Scraper & Directory Core Platform'}
+            </span>
+          </div>
+        </div>
+
+        {/* Dynamic visual placeholder for search focus from styling mockup */}
+        <div className="hidden lg:flex flex-1 max-w-xl px-12">
+          <div className="relative w-full">
+            <div className={`absolute ${isRtl ? 'right-3' : 'left-3'} top-2.5 text-slate-400`}>
+              <Search className="h-4.5 w-4.5" />
+            </div>
+            <input 
+              type="text" 
+              disabled
+              placeholder={language === 'ar' ? 'البحث مطهر ومثالي من خلال الدليل...' : 'Authorized Iraqi Geographic Core Directory...'}
+              className={`w-full py-2 ${isRtl ? 'pr-10 pl-4' : 'pl-10 pr-4'} bg-slate-100 border-none rounded-full text-xs text-slate-500 focus:outline-none placeholder-slate-400`}
+            />
+          </div>
+        </div>
+
+        {/* Right Actions: Language Selector, Add button & User icon space */}
+        <div className="flex items-center gap-3 md:gap-4">
+          
+          {/* Multilingual Selector (EN / AR / KU) - Styled like Sleek mockup */}
+          <div className="bg-slate-100 p-0.5 rounded-xl flex items-center gap-0.5 border border-slate-200">
+            {[
+              { value: 'ar', label: 'عربي' },
+              { value: 'ku', label: 'كردي' },
+              { value: 'en', label: 'EN' }
+            ].map(item => (
+              <button
+                key={item.value}
+                onClick={() => setLanguage(item.value as any)}
+                className={`text-[10px] md:text-xs font-sans px-2.5 py-1.5 rounded-lg font-semibold transition duration-150 ${language === item.value ? 'bg-white text-indigo-650 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+              >
+                {item.label}
+              </button>
+            ))}
+          </div>
+
+          {/* Add New Listing Trigger Button - styled in Sleek Indigo style */}
+          <button
+            onClick={handleOpenNewListingForm}
+            className="flex items-center gap-1.5 bg-indigo-600 hover:bg-indigo-700 text-white font-sans text-xs font-bold px-3.5 py-2 rounded-xl shadow-sm transition duration-150"
+          >
+            <Plus className="h-3.5 w-3.5" />
+            <span className="hidden sm:inline">{activeTranslations.addBusinessButton}</span>
+          </button>
+
+          {/* User profile avatar decoration */}
+          <div className="w-8 h-8 rounded-full bg-indigo-100 border border-indigo-200 flex items-center justify-center text-indigo-700 font-bold text-xs select-none">
+            AD
+          </div>
+        </div>
+
+      </nav>
+
+      {/* Outer Workspace Frame (Sidebar + Main panel) */}
+      <div className="flex flex-1 overflow-hidden">
+        
+        {/* Sidebar Navigation Panel */}
+        <aside className="w-64 bg-white border-r border-slate-200 flex flex-col p-6 shrink-0 hidden md:flex">
+          <div className="space-y-6 flex-1">
             
-            {/* Logo Brand Title (Anti-AI-Slop strict literal branding) */}
-            <div className="flex items-center gap-3">
-              <div className="h-10 w-10 md:h-11 md:w-11 bg-slate-900 rounded-2xl flex items-center justify-center text-white shadow-md">
-                <Building2 className="h-5.5 w-5.5 text-slate-100" />
-              </div>
-              <div>
-                <h1 className="text-lg md:text-xl font-sans font-bold tracking-tight text-slate-900/90">
-                  {activeTranslations.title}
-                </h1>
-                <p className="text-[10px] md:text-xs text-slate-400 font-sans hidden sm:block">
-                  {language === 'ar' ? 'البوابة الذكية لمحترفي جمع البيانات والمشترين' : 'Authorized Iraqi Geographic Directory'}
-                </p>
-              </div>
+            <div>
+              <p className="text-[10px] uppercase font-bold text-slate-450 tracking-wider mb-4">
+                {language === 'ar' ? 'سير العمل الدائري' : 'Main Workflow'}
+              </p>
+              <nav className="space-y-1.5">
+                {[
+                  { id: 'directory', label: activeTranslations.directoryTab, icon: Building2 },
+                  { id: 'scrape', label: activeTranslations.scrapeTab, icon: Cpu },
+                  { id: 'admin', label: activeTranslations.adminTab, icon: Settings }
+                ].map(tab => {
+                  const IconComponent = tab.icon;
+                  const isActive = activeTab === tab.id;
+                  return (
+                    <button
+                      key={tab.id}
+                      onClick={() => setActiveTab(tab.id as any)}
+                      className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl font-semibold text-xs transition duration-150 relative text-left ${
+                        isActive 
+                          ? 'bg-indigo-50 text-indigo-700 border-none' 
+                          : 'text-slate-600 hover:bg-slate-50'
+                      }`}
+                    >
+                      <IconComponent className={`h-4.5 w-4.5 ${isActive ? 'text-indigo-650' : 'text-slate-450'}`} />
+                      <span className="flex-1 truncate text-left">{tab.label}</span>
+                      {isActive && (
+                        <motion.div 
+                          layoutId="activeTabIndicator" 
+                          className="absolute left-0 top-2 bottom-2 w-1 bg-indigo-600 rounded-full" 
+                        />
+                      )}
+                    </button>
+                  );
+                })}
+              </nav>
             </div>
 
-            {/* Language & Workspace Toggles block */}
-            <div className="flex items-center gap-2 md:gap-4">
-              
-              {/* Multilingual Selector (EN / AR / KU) - STEP 15 */}
-              <div className="bg-slate-100 p-0.5 rounded-xl flex items-center gap-0.5 border border-slate-200">
+            {/* Governorates count widget in sidebar */}
+            <div className="space-y-3">
+              <p className="text-[10px] uppercase font-bold text-slate-450 tracking-wider mb-2">
+                {language === 'ar' ? 'المحافظات الرئيسية' : 'Key Regions'}
+              </p>
+              <div className="grid grid-cols-1 gap-1">
                 {[
-                  { value: 'ar', label: 'عربي' },
-                  { value: 'ku', label: 'كردي' },
-                  { value: 'en', label: 'EN' }
-                ].map(item => (
-                  <button
-                    key={item.value}
-                    onClick={() => setLanguage(item.value as any)}
-                    className={`text-xs font-sans px-2.5 py-1.5 rounded-lg font-medium transition duration-150 ${language === item.value ? 'bg-white text-slate-900 shadow-sm font-semibold' : 'text-slate-500 hover:text-slate-800'}`}
+                  { name: language === 'ar' ? 'بغداد' : 'Baghdad', count: '42k' },
+                  { name: language === 'ar' ? 'البصرة' : 'Basra', count: '18k' },
+                  { name: language === 'ar' ? 'أربيل' : 'Erbil', count: '22k' },
+                  { name: language === 'ar' ? 'السليمانية' : 'Sulaymaniyah', count: '15k' },
+                  { name: language === 'ar' ? 'نينوى (الموصل)' : 'Mosul', count: '11k' }
+                ].map((g, i) => (
+                  <div 
+                    key={i} 
+                    className="text-xs py-1.5 px-2.5 flex justify-between text-slate-600 font-semibold hover:bg-slate-50 rounded-lg cursor-pointer transition-colors"
                   >
-                    {item.label}
-                  </button>
+                    <span>{g.name}</span>
+                    <span className="text-slate-400 font-normal">{g.count}</span>
+                  </div>
                 ))}
               </div>
-
-              {/* Add New Listing Trigger Button */}
-              <button
-                onClick={handleOpenNewListingForm}
-                className="hidden sm:flex items-center gap-1.5 bg-slate-900 hover:bg-slate-850 text-white font-sans text-xs font-semibold px-4 py-2.5 rounded-xl shadow transition duration-150"
-              >
-                <Plus className="h-4 w-4" />
-                {activeTranslations.addBusinessButton}
-              </button>
             </div>
 
           </div>
 
-          {/* Tab Sub-Header Switcher */}
-          <div className="flex border-t border-slate-50 gap-6 text-sm font-sans">
+          {/* Active status card */}
+          <div className="mt-auto">
+            <div className="p-4 bg-slate-900 rounded-2xl text-white">
+              <h4 className="text-xs font-bold mb-1">{language === 'ar' ? 'حالة مجمع البيانات' : 'Scraper & Cleanser Status'}</h4>
+              <div className="flex items-center gap-2 mb-2">
+                <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></div>
+                <span className="text-[9px] font-mono text-slate-300 uppercase tracking-tighter">
+                  {language === 'ar' ? 'نشط في بغداد / الكرخ' : 'Active in Baghdad/Karkh'}
+                </span>
+              </div>
+              <div className="w-full h-1 bg-slate-755 rounded-full overflow-hidden">
+                <div className="h-full bg-indigo-505 w-3/4 rounded-full bg-indigo-500"></div>
+              </div>
+              <p className="text-[9px] mt-2 text-slate-400 font-sans">
+                {language === 'ar' ? '١٢,٤٠٢ سجل تحت التنظيف والمراجعة' : '12,402 entries pending deduplication clean'}
+              </p>
+            </div>
+          </div>
+
+        </aside>
+
+        {/* Main Content Pane */}
+        <main className="flex-1 overflow-y-auto bg-slate-50 p-6 md:p-8 flex flex-col">
+          
+          {/* Mobile Tab Swapper widget */}
+          <div className="flex md:hidden bg-white p-1 rounded-2xl border border-slate-200 mb-4 text-xs font-semibold overflow-x-auto shrink-0">
             {[
               { id: 'directory', label: activeTranslations.directoryTab },
               { id: 'scrape', label: activeTranslations.scrapeTab },
               { id: 'admin', label: activeTranslations.adminTab }
-            ].map(tab => {
-              const isActive = activeTab === tab.id;
-              return (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id as any)}
-                  className={`py-3 px-2 border-b-2 font-medium transition duration-150 relative ${isActive ? 'border-semibold border-slate-800 text-slate-900 font-semibold' : 'border-transparent text-slate-400 hover:text-slate-700'}`}
-                >
-                  {tab.label}
-                  {isActive && (
-                    <motion.div 
-                      layoutId="activeTabIndicator" 
-                      className="absolute bottom-0 left-0 right-0 h-[2px] bg-slate-900" 
-                    />
-                  )}
-                </button>
-              );
-            })}
+            ].map(tab => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id as any)}
+                className={`flex-1 text-center py-2 px-3 rounded-xl whitespace-nowrap transition-all ${
+                  activeTab === tab.id ? 'bg-indigo-50 text-indigo-750 font-bold' : 'text-slate-500 hover:text-slate-800'
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
           </div>
 
-        </div>
-      </header>
+          {/* Components Swapper block */}
+          <div className="flex-1">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={activeTab + language + reloaderSeq}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.15 }}
+                className="h-full"
+              >
+                {activeTab === 'directory' && (
+                  <DirectoryView 
+                    categories={categories}
+                    locations={locations}
+                    language={language}
+                    translations={activeTranslations}
+                    onEditBusiness={handleOpenEditForm}
+                  />
+                )}
 
-      {/* Main Container Content */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={activeTab + language + reloaderSeq}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.15 }}
-          >
-            {activeTab === 'directory' && (
-              <DirectoryView 
-                categories={categories}
-                locations={locations}
-                language={language}
-                translations={activeTranslations}
-                onEditBusiness={handleOpenEditForm}
-              />
-            )}
+                {activeTab === 'scrape' && (
+                  <ScraperView 
+                    categories={categories}
+                    locations={locations}
+                    language={language}
+                    translations={activeTranslations}
+                    onRefreshDirectory={triggerDirectoryReload}
+                  />
+                )}
 
-            {activeTab === 'scrape' && (
-              <ScraperView 
-                categories={categories}
-                locations={locations}
-                language={language}
-                translations={activeTranslations}
-                onRefreshDirectory={triggerDirectoryReload}
-              />
-            )}
+                {activeTab === 'admin' && (
+                  <AdminDashboard 
+                    categories={categories}
+                    locations={locations}
+                    language={language}
+                    translations={activeTranslations}
+                  />
+                )}
+              </motion.div>
+            </AnimatePresence>
+          </div>
 
-            {activeTab === 'admin' && (
-              <AdminDashboard 
-                categories={categories}
-                locations={locations}
-                language={language}
-                translations={activeTranslations}
-              />
-            )}
-          </motion.div>
-        </AnimatePresence>
-      </main>
+          {/* Footer branding details line */}
+          <footer className="mt-8 border-t border-slate-200 pt-4 flex flex-col sm:flex-row justify-between items-center text-[10px] text-slate-400 font-mono gap-2">
+            <span className="flex items-center gap-1">
+              <span className="w-1.5 h-1.5 rounded-full bg-indigo-500"></span>
+              {language === 'ar' ? 'مزامنة الخادم نشطة: زمن الاستجابة ٤٢ ملي ثانية' : 'Server Sync Active: Latency 42ms'}
+            </span>
+            <span>
+              Build: 1.4.0-Iraq_Deploy • Updated 4m ago
+            </span>
+          </footer>
+
+        </main>
+
+      </div>
 
       {/* Edit Corporate Record Form Modal overlay (ST_12 & ST_15) */}
       <AnimatePresence>
         {showEditModal && editingBusiness && (
           <div className="fixed inset-0 bg-slate-950/40 backdrop-blur-sm z-50 flex items-center justify-center p-4">
             <motion.div 
+
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
