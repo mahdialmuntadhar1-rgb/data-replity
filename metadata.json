@@ -1,0 +1,6 @@
+{
+  "name": "Iraq Business Platform",
+  "description": "A comprehensive business discovery, scraping, phone normalization, and duplicate-prevention directory for Iraqi governorates.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
